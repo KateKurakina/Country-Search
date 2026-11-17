@@ -55,4 +55,32 @@ describe('searchCountries', () => {
       status: 500,
     });
   });
+
+  it('should combine user signal with timeout signal', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue([]),
+    });
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    const userController = new AbortController();
+
+    await searchCountries('Germany', userController.signal);
+
+    const requestSignal = fetchMock.mock.calls[0][1].signal as AbortSignal;
+
+    expect(requestSignal).not.toBe(userController.signal);
+    expect(requestSignal).toBeInstanceOf(AbortSignal);
+  });
+
+  it('should propagate TimeoutError', async () => {
+    const timeoutError = new DOMException('The operation timed out', 'TimeoutError');
+
+    const fetchMock = vi.fn().mockRejectedValue(timeoutError);
+
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(searchCountries('Germany', new AbortController().signal)).rejects.toThrow('The operation timed out');
+  });
 });
