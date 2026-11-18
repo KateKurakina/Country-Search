@@ -132,3 +132,70 @@ body {
   margin: 8px 0;
   color: #666;
 }
+
+.country-card {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.country-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 12%);
+}
+
+.country-card:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 3px;
+}
+
+.details-dialog {
+  width: min(90%, 480px);
+  max-width: 480px;
+  padding: 32px;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgb(0 0 0 / 20%);
+}
+
+.details-dialog::backdrop {
+  background: rgb(0 0 0 / 55%);
+}
+
+.details-dialog__close {
+  display: block;
+  margin-left: auto;
+  border: none;
+  background: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.details-dialog__content {
+  text-align: center;
+}
+
+.details-dialog__flag {
+  width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+  margin-bottom: 16px;
+}
+
+.details-dialog__title {
+  margin: 0 0 20px;
+  font-size: 24px;
+}
+
+.details-dialog__info {
+  margin: 12px 0;
+  color: #555;
+  text-align: left;
+}
+
+@media (max-width: 480px) {
+  .details-dialog {
+    padding: 20px;
+  }
+}

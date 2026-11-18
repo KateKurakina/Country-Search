@@ -43,13 +43,76 @@ const results = document.createElement('section');
 results.className = 'results';
 results.setAttribute('aria-label', 'Search results');
 
+const detailsDialog = document.createElement('dialog');
+detailsDialog.className = 'details-dialog';
+
+const detailsContent = document.createElement('div');
+detailsContent.className = 'details-dialog__content';
+
+const closeButton = document.createElement('button');
+closeButton.className = 'details-dialog__close';
+closeButton.type = 'button';
+closeButton.textContent = '×';
+closeButton.setAttribute('aria-label', 'Close dialog');
+
+closeButton.addEventListener('click', () => {
+  detailsDialog.close();
+});
+
+detailsDialog.append(closeButton, detailsContent);
+
 searchForm.append(searchInput, searchButton);
 app.append(title, description, searchForm, status, retryButton, results);
-document.body.append(app);
+document.body.append(app, detailsDialog);
+
+const openCountryDetails = (country: Country): void => {
+  detailsContent.replaceChildren();
+
+  const flag = document.createElement('img');
+  flag.className = 'details-dialog__flag';
+  flag.src = country.flagUrl;
+  flag.alt = `Flag of ${country.name}`;
+
+  const name = document.createElement('h2');
+  name.className = 'details-dialog__title';
+  name.textContent = country.name;
+
+  const details = [
+    `Capital: ${country.capital}`,
+    `Region: ${country.region}`,
+    `Population: ${country.population.toLocaleString()}`,
+    `Languages: ${country.languages.join(', ') || 'No data'}`,
+  ];
+
+  detailsContent.append(flag, name);
+
+  details.forEach((detail) => {
+    const paragraph = document.createElement('p');
+    paragraph.className = 'details-dialog__info';
+    paragraph.textContent = detail;
+    detailsContent.append(paragraph);
+  });
+
+  detailsDialog.showModal();
+};
 
 const createCountryCard = (country: Country): HTMLElement => {
   const card = document.createElement('article');
   card.className = 'country-card';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('aria-label', `View details about ${country.name}`);
+
+  card.addEventListener('click', () => {
+    openCountryDetails(country);
+  });
+
+  card.addEventListener('keydown', (event: KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openCountryDetails(country);
+    }
+  });
 
   const flag = document.createElement('img');
   flag.className = 'country-card__flag';
