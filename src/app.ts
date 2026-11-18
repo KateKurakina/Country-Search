@@ -143,8 +143,10 @@ const searchController = new SearchController<Country>(async (query, signal) => 
 });
 
 let lastQuery = '';
+let latestSearchId = 0;
 
 const performSearch = async (query: string): Promise<void> => {
+  const searchId = ++latestSearchId;
   lastQuery = query;
   retryButton.hidden = true;
 
@@ -154,6 +156,10 @@ const performSearch = async (query: string): Promise<void> => {
 
   try {
     const countries = await searchController.search(query);
+
+    if (searchId !== latestSearchId) {
+      return;
+    }
 
     if (countries.length === 0) {
       status.className = 'status status--empty';
@@ -168,9 +174,18 @@ const performSearch = async (query: string): Promise<void> => {
       results.append(createCountryCard(country));
     });
   } catch (error) {
+    if (searchId !== latestSearchId) {
+      return;
+    }
+
     retryButton.hidden = false;
     status.className = 'status status--error';
-    status.textContent = error instanceof Error ? error.message : 'Something went wrong.';
+
+    if (error instanceof DOMException && error.name === 'TimeoutError') {
+      status.textContent = 'Request timed out. Please try again.';
+    } else {
+      status.textContent = error instanceof Error ? error.message : 'Something went wrong.';
+    }
   }
 };
 
@@ -185,10 +200,13 @@ const debouncedSearch = debounce((query: string) => {
 }, 500);
 
 searchInput.addEventListener('input', () => {
+  debouncedSearch.cancel();
+  searchController.cancel();
+  latestSearchId += 1;
+
   const query = searchInput.value.trim();
 
   if (!query) {
-    searchController.cancel();
     retryButton.hidden = true;
     status.className = 'status';
     status.textContent = '';
@@ -201,6 +219,7 @@ searchInput.addEventListener('input', () => {
 
 searchForm.addEventListener('submit', (event: SubmitEvent) => {
   event.preventDefault();
+  debouncedSearch.cancel();
 
   const query = searchInput.value.trim();
 
