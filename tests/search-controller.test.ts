@@ -60,6 +60,17 @@ describe('SearchController', () => {
     await expect(controller.search('Germany')).resolves.toEqual([]);
   });
 
+  it('should reject when a request times out', async () => {
+    const timeoutError = new DOMException('Request timed out', 'TimeoutError');
+    const search = vi.fn().mockRejectedValue(timeoutError);
+
+    const controller = new SearchController(search);
+
+    await expect(controller.search('Germany')).rejects.toMatchObject({
+      name: 'TimeoutError',
+    });
+  });
+
   it('should reject when a real error occurs', async () => {
     const error = new Error('Network error');
     const search = vi.fn().mockRejectedValue(error);
