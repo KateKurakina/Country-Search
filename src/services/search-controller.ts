@@ -1,11 +1,11 @@
-export type SearchFn = (query: string, signal: AbortSignal) => Promise<string[]>;
+export type SearchFn<T> = (query: string, signal: AbortSignal) => Promise<T[]>;
 
-export class SearchController {
+export class SearchController<T = string> {
   private abortController: AbortController | null = null;
 
-  constructor(private readonly searchFn: SearchFn) {}
+  constructor(private readonly searchFn: SearchFn<T>) {}
 
-  async search(query: string): Promise<string[]> {
+  async search(query: string): Promise<T[]> {
     if (this.abortController) {
       this.abortController.abort();
     }

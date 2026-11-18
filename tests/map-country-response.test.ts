@@ -5,7 +5,9 @@ describe('mapCountryResponse', () => {
   it('should map country data to the required format', () => {
     const rawCountry = {
       name: 'Germany',
-      flag: '🇩🇪',
+      flags: {
+        png: 'https://example.com/germany.png',
+      },
       capital: 'Berlin',
       region: 'Europe',
       population: 83240525,
@@ -22,7 +24,7 @@ describe('mapCountryResponse', () => {
 
     expect(result).toEqual({
       name: 'Germany',
-      flag: '🇩🇪',
+      flagUrl: 'https://example.com/germany.png',
       capital: 'Berlin',
       region: 'Europe',
       population: 83240525,
@@ -33,7 +35,9 @@ describe('mapCountryResponse', () => {
   it('should map all language names when a country has multiple languages', () => {
     const rawCountry = {
       name: 'Switzerland',
-      flag: '🇨🇭',
+      flags: {
+        png: 'https://example.com/switzerland.png',
+      },
       capital: 'Bern',
       region: 'Europe',
       population: 8796669,
@@ -44,7 +48,7 @@ describe('mapCountryResponse', () => {
 
     expect(result).toEqual({
       name: 'Switzerland',
-      flag: '🇨🇭',
+      flagUrl: 'https://example.com/switzerland.png',
       capital: 'Bern',
       region: 'Europe',
       population: 8796669,

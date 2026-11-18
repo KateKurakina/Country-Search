@@ -2,7 +2,9 @@ import type { Country } from '../types/country.js';
 
 interface RawCountry {
   name: string;
-  flag: string;
+  flags: {
+    png: string;
+  };
   capital: string;
   region: string;
   population: number;
@@ -15,7 +17,7 @@ export const mapCountryResponse = (raw: unknown): Country => {
   const country = raw as RawCountry;
   return {
     name: country.name,
-    flag: country.flag,
+    flagUrl: country.flags.png,
     capital: country.capital,
     region: country.region,
     population: country.population,
