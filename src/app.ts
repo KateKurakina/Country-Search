@@ -1,6 +1,7 @@
 import { searchCountries } from './services/countries-api.js';
 import { mapCountryResponse } from './utils/map-country-response.js';
 import { SearchController } from './services/search-controller.js';
+import { debounce } from './utils/debounce.js';
 import type { Country } from './types/country.js';
 
 const app = document.createElement('main');
@@ -114,6 +115,25 @@ retryButton.addEventListener('click', () => {
   if (lastQuery) {
     void performSearch(lastQuery);
   }
+});
+
+const debouncedSearch = debounce((query: string) => {
+  void performSearch(query);
+}, 500);
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.trim();
+
+  if (!query) {
+    searchController.cancel();
+    retryButton.hidden = true;
+    status.className = 'status';
+    status.textContent = '';
+    results.replaceChildren();
+    return;
+  }
+
+  debouncedSearch(query);
 });
 
 searchForm.addEventListener('submit', (event: SubmitEvent) => {

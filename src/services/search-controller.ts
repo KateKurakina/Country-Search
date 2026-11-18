@@ -29,4 +29,9 @@ export class SearchController<T = string> {
       throw error;
     }
   }
+
+  cancel(): void {
+    this.abortController?.abort();
+    this.abortController = null;
+  }
 }
