@@ -22,8 +22,14 @@ export class SearchController<T = string> {
 
       return result;
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        return [];
+      if (error instanceof DOMException) {
+        if (error.name === 'AbortError') {
+          return [];
+        }
+
+        if (error.name === 'TimeoutError') {
+          throw error;
+        }
       }
 
       throw error;
